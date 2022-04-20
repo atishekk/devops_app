@@ -1,3 +1,6 @@
+var redraw = false;
+var myChart;
+
 function readURL(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
@@ -9,12 +12,6 @@ function readURL(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
-
-$(function () {
-    $('#upload').on('change', function () {
-        readURL(input);
-    });
-});
 
 var input = document.getElementById('upload');
 var infoArea = document.getElementById('upload-label');
@@ -29,7 +26,6 @@ async function predict(event) {
         body: data
     });
     res = await resp.json()
-    console.log(res);
     genResultTable(res);
     var fileName = input.files[0].name;
     infoArea.textContent = 'File name: ' + fileName;
@@ -75,9 +71,13 @@ function genResultTable(resp) {
         options: {}
     };
     const chart = document.getElementById('results');
-    const myChart = new Chart(
+    if (redraw) {
+        myChart.destroy();
+    }
+    myChart = new Chart(
         chart,
         config
     );
-    chart.style.visibility = "visible"
+    chart.style.visibility = "visible";
+    redraw = true;
 }
