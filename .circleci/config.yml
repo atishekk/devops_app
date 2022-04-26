@@ -9,4 +9,12 @@ jobs:
          echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 
      # build the application image
-     - run: TAG="0.1.${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH}" && docker build -t atishekk/devops_app:$TAG . && docker push atishekk/devops_app:$TAG
+     - run: |
+          TAG="0.1.${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH}" 
+          docker build -t atishekk/devops_app:$TAG .
+          docker push atishekk/devops_app:$TAG
+          sudo curl https://cli-assets.heroku.com/install.sh | sh
+          HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:login
+          HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:push -a devops-ai-hw web
+          HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:release -a devops-ai-hw web
+
